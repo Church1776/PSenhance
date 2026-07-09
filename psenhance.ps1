@@ -1,7 +1,7 @@
-$enhancements = (Get-ChildItem -Path .\Enhancements -Recurse -Name *".ps1")
+$enhancements = @(Get-ChildItem -Path "$(Split-Path -Parent $PROFILE)\Scripts\PSenhance\Enhancements" -Recurse -Name *".ps1")
 
 foreach ($enhancement in $enhancements) {
-    . ".\Enhancements\$enhancement"
+    . "$(Split-Path -Parent $PROFILE)\Scripts\PSenhance\Enhancements\$enhancement"
 }
 
 $script_location = $($MyInvocation.MyCommand.Path)
