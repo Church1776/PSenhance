@@ -1,7 +1,21 @@
+
+$name ??= 'cerulean'
+$AT ??= 'brightblue'
+$machine ??= 'skybluebright'
+$system_env ??= 'gold'
+$PSvar ??= 'periwinkle'
+$drv_letter ??= 'amber'
+$win32_path ??= 'coral'
+$win32_Z ??= 'brightred'
+$vcs_main ??= 'gray'
+$vcs_2nd ??= 'lightgray'
+$vcs_3rd ??= 'reset'
+$colon ??= 'gray'
+
 $enhancements = @(Get-ChildItem -Path "$(Split-Path -Parent $PROFILE)\Scripts\PSenhance\Enhancements" -Recurse -Name *".ps1")
 
 foreach ($enhancement in $enhancements) {
-    . "$(Split-Path -Parent $PROFILE)\Scripts\PSenhance\Enhancements\$enhancement"
+    . "$(Split-Path -Parent $PROFILE.CurrentUserAllHosts)\Scripts\PSenhance\Enhancements\$enhancement"
 }
 
 $script_location = $($MyInvocation.MyCommand.Path)
@@ -36,10 +50,10 @@ function prompt {
                 $gitShortHashId = "$(git rev-parse --short HEAD 2>$null)"
                 $global:gitHashLength = $gitShortHashId.Length
             }
-            $gitBranch = "HEAD$($ink.lightgray)@$($ink.reset)$($gitBranch.Substring(0, $global:gitHashLength))$($ink.gray)"
+            $gitBranch = "HEAD$($ink[$vcs_2nd])@$($ink[$vcs_3rd])$($gitBranch.Substring(0, $global:gitHashLength))$($ink[$vcs_main])"
         }
         if ($gitBranch) {
-            $gitBranch = "$($ink.gray):${gitBranch}:$($ink.reset) "
+            $gitBranch = "$($ink[$vcs_main]):${gitBranch}:$($ink.reset) "
         }
     }
     
@@ -55,5 +69,6 @@ function prompt {
     if ("$currentPath" -eq "$($env:USERPROFILE.Substring(2))" -or $currentPath.StartsWith("$($env:USERPROFILE.Substring(2))")) {
         $currentPath = $currentPath.Replace("$($env:USERPROFILE.Substring(2))", '~')
     }
-    "$($ink.cerulean)$env:USERNAME$($ink.brightblue)@$($ink.skybluebright)$env:COMPUTERNAME$($ink.gray):$($ink.gold)Windows$($ink.gray):$($ink.periwinkle)PS$($ink.gray):$($ink.amber)$($PWD.Drive.Name)$($ink.amber):$($ink.coral)$currentPath$($ink.brightred)>$($ink.reset) $gitBranch"
+    "$($ink[$name])$env:USERNAME$($ink[$AT])@$($ink[$machine])$env:COMPUTERNAME$($ink[$colon]):$($ink[$system_env])Windows$($ink[$colon]):$($ink[$drv_letter])$($PWD.Drive.Name):$($ink[$win32_path])$currentPath$($ink[$win32_Z])>$($ink.reset) $gitBranch"
+    #"$($ink.cerulean)$env:USERNAME$($ink.brightblue)@$($ink.skybluebright)$env:COMPUTERNAME$($ink.gray):$($ink.gold)Windows$($ink.gray):$($ink.periwinkle)PS$($ink.gray):$($ink.amber)$($PWD.Drive.Name)$($ink.amber):$($ink.coral)$currentPath$($ink.brightred)>$($ink.reset) $gitBranch"
 }
