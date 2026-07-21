@@ -25,7 +25,6 @@ $ink = @{
   darkgray        = "`e[38;5;240m"
   orange          = "`e[38;5;208m"
   purple          = "`e[38;5;135m"
-  lightorange     = "`e[38;5;228m"
   pink            = "`e[38;5;205m"
   brown           = "`e[38;5;94m"
   brightgold      = "`e[38;5;227m"
@@ -63,6 +62,6 @@ function shcolors {
   }
   Write-Host "Colors loaded:"
   foreach ($color in $ink.Keys) {
-    Write-Host "$($ink['gray']): $($ink[$color])$color$($ink['reset'])"
+    Write-Host "$($ink.gray): $($ink.$color)$color$($ink.reset)"
   }
 }
