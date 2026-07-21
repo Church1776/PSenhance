@@ -69,7 +69,7 @@ function prompt {
         $currentPath = $currentPath.Replace("$($env:USERPROFILE)", '~')
     }
 
-    if ("$currentPath" -cmatch "^[A-Za-z]:\\") {
+    if ("$currentPath" -cmatch "^[A-Za-z]:[/\\]") {
         $currentDrive = "$($ink[$drv_letter])$($currentPath.Substring(0,2))" # Highlight the drive a different color if it exists.
         $currentPath = "$($currentPath.Substring(2))" # Shift the path to remove the drive portion from the path.
     }
