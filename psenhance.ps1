@@ -70,7 +70,6 @@ function prompt {
     #    $gitBranch = "$($ink.gray):${gitBranch}:$($ink.reset) "
     #}
     #
-<<<<<<< Updated upstream
     $currentPath = "$($PWD.Path)" # Remove the drive letter and colon (e.g., "C:")
 
     if ("$currentPath" -eq "$($env:USERPROFILE)" -or $currentPath.StartsWith("$($env:USERPROFILE)")) {
@@ -82,20 +81,6 @@ function prompt {
         $currentPath = "$($currentPath.Substring(2))" # Shift the path to remove the drive portion from the path.
     }
 
-=======
-    #$currentPath = "$($PWD.Path.Substring(2))" # Remove the drive letter and colon (e.g., "C:")
-
-    $currentDrive = ""
-    $currentPath = "$($PWD.Path)"
-    
-    if ("$currentPath" -eq "$($env:USERPROFILE)" -or $currentPath.StartsWith("$($env:USERPROFILE)")) {
-        $currentPath = $currentPath.Replace("$($env:USERPROFILE)", '~')
-    }
-    if ("$currentPath" -cmatch '^[A-Z]:[/\\]') {
-        $currentDrive = "$($ink[$drv_letter])$($currentPath.Substring(0, 2))"
-        $currentPath = "$($currentPath.Substring(2))"
-    }
->>>>>>> Stashed changes
     "$($ink[$name])$env:USERNAME$($ink[$AT])@$($ink[$machine])$env:COMPUTERNAME$($ink[$colon]):$($ink[$system_env])Windows$($ink[$colon]):$currentDrive$($ink[$win32_path])$currentPath$($ink[$win32_Z])>$($ink.reset) $gitBranch"
     #"$($ink.cerulean)$env:USERNAME$($ink.brightblue)@$($ink.skybluebright)$env:COMPUTERNAME$($ink.gray):$($ink.gold)Windows$($ink.gray):$($ink.periwinkle)PS$($ink.gray):$($ink.amber)$($PWD.Drive.Name)$($ink.amber):$($ink.coral)$currentPath$($ink.brightred)>$($ink.reset) $gitBranch"
 }
