@@ -6,66 +6,78 @@ Set-Alias -Name wo -Value Where-Object -Force
 Set-Alias -Name tpa -Value Test-Path -Force
 Set-Alias -Name split -Value Split-Path -Force
 
-$llvm_aliases = @{
-  llar = "llvm-ar.exe"
-  llcov = "llvm-cov.exe"
-  llcxxfilt = "llvm-cxxfilt.exe"
-  lldlltool = "llvm-dlltool.exe"
-  lldwp = "llvm-dwp.exe"
-  llib = "llvm-lib.exe"
-  llmca = "llvm-mca.exe"
-  llml = "llvm-ml.exe"
-  llml64 = "llvm-ml64.exe"
-  llmt = "llvm-mt.exe"
-  llnm = "llvm-nm.exe"
-  llobjcopy = "llvm-objcopy.exe"
-  llobjdump = "llvm-objdump.exe"
-  llpdbutil = "llvm-pdbutil.exe"
-  llprofdata = "llvm-profdata.exe"
-  llprofgen = "llvm-profgen.exe"
-  llranlib = "llvm-ranlib.exe"
-  llrc = "llvm-rc.exe"
-  llreadobj = "llvm-readobj.exe"
-  llsize = "llvm-size.exe"
-  llstrings = "llvm-strings.exe"
-  llstrip = "llvm-strip.exe"
-  llsymbolizer   = "llvm-symbolizer.exe"
+function which {
+  foreach ($arg in $args) {
+    $err = $null
+    Get-Command -Syntax $arg -ErrorAction SilentlyContinue -ErrorVariable err | ForEach-Object { $_ -replace '\\', '\' -replace '//', '/' }
+    if ($err -ne $null) {
+      Write-Error $err.Exception.Message
+    }
+  }
 }
-$clang_aliases = @{
-  clcpp = "clang-cpp"
-  cldoc = "clang-doc"
-  cltidy = "clang-tidy"
-  clformat = "clang-format"
-  clcheck = "clang-check"
-  clmove = "clang-move"
-  clquery = "clang-query"
-  clapply = "clang-apply-replacements"
+function where {
+  foreach ($arg in $args) {
+    $err = $null
+    Get-Command -Syntax -All $arg -ErrorAction SilentlyContinue -ErrorVariable err | ForEach-Object { $_ -replace '\\', '\' -replace '//', '/' }
+    if ($err -ne $null) {
+      Write-Error $err.Exception.Message
+    }
+  }
 }
-$mlir_aliases = @{
-  mlopt = "mlir-opt"
-  mlpdll = "mlir-pdll"
-  mlirlsp = "mlir-lsp-server"
-  mlquery = "mlir-query"
-  mlreduce = "mlir-reduce"
-  mlrewrite = "mlir-rewrite"
-  mlrunner = "mlir-runner"
-  mltblgen = "mlir-tblgen"
-  mltranslate = "mlir-translate"
+$llvmCmds = @($(Get-Command llvm-*).Name)
+$clangCmds = @($(Get-Command clang-*).Name)
+$mlirCmds = @($(Get-Command mlir-*).Name)
+$spirvCmds = @($(Get-Command spirv-*).Name)
+
+$llvmHashTable = @{}
+$clangHashTable = @{}
+$mlirHashTable = @{}
+$spirvHashTable = @{}
+
+ForEach ($cmd in $llvmCmds) {
+  $alias = $($cmd -replace '^llvm-', 'll')
+  $alias = $($alias -replace '^lll', 'll')
+  $alias = $($alias -replace '.exe', '')
+  $llvmHashTable[$alias] = $cmd
 }
-$spirv_aliases = @{
-  spvas = "spirv-as"
-  spvcfg = "spirv-cfg"
-  spvdiff = "spirv-diff"
-  spvdis = "spirv-dis"
-  spvlesspipe = "spirv-lesspipe"
-  spvlink = "spirv-link"
-  spvlint = "spirv-lint"
-  spvobjdump = "spirv-objdump"
-  spvopt = "spirv-opt"
-  spvval = "spirv-val"
+ForEach ($cmd in $clangCmds) {
+  $alias = $($cmd -replace '^clang-', 'cl')
+  $alias = $($alias -replace '^cll', 'cl')
+  $alias = $($alias -replace '^clcl', 'cl')
+  $alias = $($alias -replace '.exe', '')
+  $clangHashTable[$alias] = $cmd
+}
+ForEach ($cmd in $mlirCmds) {
+  $alias = $($cmd -replace '^mlir-', 'ml')
+  $alias = $($alias -replace '^mll', 'ml')
+  $alias = $($alias -replace '.exe', '')
+  $mlirHashTable[$alias] = $cmd
+}
+ForEach ($cmd in $spirvCmds) {
+  $alias = $($cmd -replace '^spirv-', 'spv')
+  $alias = $($alias -replace '^spvv', 'spv')
+  $alias = $($alias -replace '.exe', '')
+  $spirvHashTable[$alias] = $cmd
 }
 
+function add_utility_aliases {
+  param ([hashtable]$table = $null)
+  if ($null -eq $table) { return }
 
+  foreach ($entry in $table.GetEnumerator()) {
+    $aliasName = $entry.Key
+    $cmdName = $entry.Value
+
+    $cmdFullName = Get-Command -Name $cmdName -ErrorAction SilentlyContinue
+
+    if ($cmdFullName -ne $null) {
+      if (-not (Get-Alias -Name $aliasName -ErrorAction SilentlyContinue)) {
+        Set-Alias -Name $aliasName -Value $cmdFullName.Source -Force -Scope Global
+        Get-Alias -Name $aliasName | Format-Table Name, Definition
+      }
+    }
+  }
+}
 # Functions to add aliases
 #function add_utility_aliases {
 #  local -A r_arr=(${(@Pkv)1})

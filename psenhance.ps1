@@ -12,10 +12,17 @@ $vcs_2nd ??= 'lightgray'
 $vcs_3rd ??= 'reset'
 $colon ??= 'gray'
 
-$enhancements = @(Get-ChildItem -Path "$(Split-Path -Parent $PROFILE)\Scripts\PSenhance\Enhancements" -Recurse -Name *".ps1")
+$OS_Enhancements = $env:OS
+
+if ($OS_Enhancements -eq "Windows_NT") {
+    $OS_Enhancements = "$($OS_Enhancements.Substring(0,7))"
+}
+
+$enhancements = @(Get-ChildItem -Path "$PSScriptRoot\Enhancements\$OS_Enhancements" -File *".ps1")
+$enhancements += @(Get-ChildItem -Path "$PSScriptRoot\Enhancements" -File *".ps1")
 
 foreach ($enhancement in $enhancements) {
-    . "$(Split-Path -Parent $PROFILE.CurrentUserAllHosts)\Scripts\PSenhance\Enhancements\$enhancement"
+    . "$enhancement"
 }
 
 $script_location = $($MyInvocation.MyCommand.Path)
@@ -63,6 +70,7 @@ function prompt {
     #    $gitBranch = "$($ink.gray):${gitBranch}:$($ink.reset) "
     #}
     #
+<<<<<<< Updated upstream
     $currentPath = "$($PWD.Path)" # Remove the drive letter and colon (e.g., "C:")
 
     if ("$currentPath" -eq "$($env:USERPROFILE)" -or $currentPath.StartsWith("$($env:USERPROFILE)")) {
@@ -74,6 +82,20 @@ function prompt {
         $currentPath = "$($currentPath.Substring(2))" # Shift the path to remove the drive portion from the path.
     }
 
+=======
+    #$currentPath = "$($PWD.Path.Substring(2))" # Remove the drive letter and colon (e.g., "C:")
+
+    $currentDrive = ""
+    $currentPath = "$($PWD.Path)"
+    
+    if ("$currentPath" -eq "$($env:USERPROFILE)" -or $currentPath.StartsWith("$($env:USERPROFILE)")) {
+        $currentPath = $currentPath.Replace("$($env:USERPROFILE)", '~')
+    }
+    if ("$currentPath" -cmatch '^[A-Z]:[/\\]') {
+        $currentDrive = "$($ink[$drv_letter])$($currentPath.Substring(0, 2))"
+        $currentPath = "$($currentPath.Substring(2))"
+    }
+>>>>>>> Stashed changes
     "$($ink[$name])$env:USERNAME$($ink[$AT])@$($ink[$machine])$env:COMPUTERNAME$($ink[$colon]):$($ink[$system_env])Windows$($ink[$colon]):$currentDrive$($ink[$win32_path])$currentPath$($ink[$win32_Z])>$($ink.reset) $gitBranch"
     #"$($ink.cerulean)$env:USERNAME$($ink.brightblue)@$($ink.skybluebright)$env:COMPUTERNAME$($ink.gray):$($ink.gold)Windows$($ink.gray):$($ink.periwinkle)PS$($ink.gray):$($ink.amber)$($PWD.Drive.Name)$($ink.amber):$($ink.coral)$currentPath$($ink.brightred)>$($ink.reset) $gitBranch"
 }
