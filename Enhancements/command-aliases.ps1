@@ -72,11 +72,11 @@ function add_utility_aliases {
   foreach ($entry in $table.GetEnumerator()) {
     $aliasName = $entry.Key
     $cmdName = $entry.Value
-    if ($cmdName -eq $null) {
+    if ($null -eq $cmdName) {
       continue
     }
     $cmdFullName = Get-Command -Name $cmdName -ErrorAction SilentlyContinue
-    if ($cmdFullName -eq $null) {
+    if ($null -eq $cmdFullName) {
       continue
     }
     if (-not (Get-Alias -Name $aliasName -ErrorAction SilentlyContinue)) {
