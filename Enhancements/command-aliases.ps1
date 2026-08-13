@@ -5,11 +5,13 @@ Set-Alias -Name rd -Value rmdir -Force
 Set-Alias -Name wo -Value Where-Object -Force
 Set-Alias -Name tpa -Value Test-Path -Force
 Set-Alias -Name split -Value Split-Path -Force
+Set-Alias -Name join -Value Join-Path -Force
 
 function which {
 	foreach ($arg in $args) {
 		$err = $null
-		Get-Command -Syntax $arg -ErrorAction SilentlyContinue -ErrorVariable err | ForEach-Object { $_ -replace '\\{2,}', '\' -replace '//{2,}', '/' }
+		Get-Command -Syntax $arg -ErrorAction SilentlyContinue -ErrorVariable err
+		| ForEach-Object { $_ -replace '\\{2,}', '\' -replace '//{2,}', '/' }
 		if ($err -ne $null) {
 			Write-Error $err.Exception.Message
 		}
@@ -18,7 +20,8 @@ function which {
 function where {
 	foreach ($arg in $args) {
 		$err = $null
-		Get-Command -Syntax -All $arg -ErrorAction SilentlyContinue -ErrorVariable err | ForEach-Object { $_ -replace '\\{2,}', '\' -replace '//{2,}', '/' }
+		Get-Command -Syntax -All $arg -ErrorAction SilentlyContinue -ErrorVariable err
+		| ForEach-Object { $_ -replace '\\{2,}', '\' -replace '//{2,}', '/' }
 		if ($err -ne $null) {
 			Write-Error $err.Exception.Message
 		}

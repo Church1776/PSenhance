@@ -5,7 +5,7 @@ $system_env ??= 'slateblue'
 $PSvar ??= 'periwinkle'
 $drv_letter ??= 'amber'
 $win32_path ??= 'turquoise'
-$win32_V ??= 'mint'
+$win32_Z ??= 'mint'
 $vcs_main ??= 'gray'
 $vcs_2nd ??= 'lightgray'
 $vcs_3rd ??= 'reset'
@@ -74,5 +74,5 @@ function prompt {
 		$currentPath = "$($currentPath.Substring(2))" # Shift the path to remove the drive portion from the path.
 	}
 
-	"$($ink[$name])$env:USERNAME$($ink[$AT])@$($ink[$machine])$env:COMPUTERNAME$($ink[$colon]):$($ink[$system_env])Windows$($ink[$colon]):$currentDrive$($ink[$win32_path])$currentPath$($ink[$win32_V])>$($ink.reset) $gitBranch"
+	"$($ink[$name])$env:USERNAME$($ink[$AT])@$($ink[$machine])$env:COMPUTERNAME$($ink[$colon]):$($ink[$system_env])Windows$($ink[$colon]):$currentDrive$($ink[$win32_path])$currentPath$($ink[$win32_Z])>$($ink.reset) $gitBranch"
 }
