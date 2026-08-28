@@ -7,6 +7,7 @@ $Tools ??= [ordered]@{
 	"Lua" = "lua"
 	"Ninja" = "ninja"
 	"PreMake" = "premake"
+	"Python" = "python"
 	"VCPkg" = "vcpkg"
 }
 $Paths ??= @(
@@ -19,6 +20,8 @@ $Paths ??= @(
 $ToolPaths += $(Get-PSDrive -PSProvider FileSystem).Name | ForEach-Object { "${_}:\Tools" }
 $Paths += $ToolPaths
 
+$exe = "brightgreen"
+$dir = "mint"
 foreach ($tool in $Tools.Keys) {
 	foreach ($path in $Paths) {
 		if (($null -eq $path -or $path -eq "") -or ($null -eq $tool -or $tool -eq "")) {
@@ -35,11 +38,15 @@ foreach ($tool in $Tools.Keys) {
 
 		$toolSubFolder = "$(Split-Path "$($Tools[$tool])" -Parent)"
 		$toolExecutable = "$(Split-Path "$($Tools[$tool])" -Leaf).exe"
+		
 		if ( -not (("$null" -eq "$toolSubFolder") -or ("$toolSubFolder" -eq ""))) {
 			$toolDirectory = "$(Get-ChildItem -Path "$toolDirectory" -Filter "$toolSubFolder" -Directory -Recurse | Select-Object -First 1)"
 		}
 		$toolExecutable = "$(Get-ChildItem -Path "$toolDirectory" -Filter "$toolExecutable" -File -Recurse | Select-Object -First 1)"
-
+		
+		if (-not (Test-Path -Path "$toolExecutable" -ErrorAction SilentlyContinue)) {
+			continue
+		}
 		$toolPath = "$(Split-Path -Path "$($toolExecutable)" -Parent)"
 		
 		if (-not ($env:PATH -split ';' | Where-Object { $_ -eq "$toolPath" }) -and (Test-Path "$toolPath")) {

@@ -1,3 +1,8 @@
+Write-Host "**********************************************************************
+** PowerShell Enhance Module v0.1.0
+** Owner: brassmajor@gmail.com
+**********************************************************************"
+
 $name ??= 'orange'
 $AT ??= 'amber'
 $machine ??= 'vanilla'
@@ -27,7 +32,6 @@ foreach ($enhancement in $enhancements) {
 $script_location = $($MyInvocation.MyCommand.Path)
 $script_location = $script_location.Replace("$env:USERPROFILE", '~')
 
-Write-Host "Loaded PSenhancement Script: $script_location"
 function prompt {
 	if (-not $global:gitRepoRoot -or -not $PWD.Path.StartsWith($global:gitRepoRoot)) {
 		$global:gitRepoRoot = ""
