@@ -20,8 +20,6 @@ $Paths ??= @(
 $ToolPaths += $(Get-PSDrive -PSProvider FileSystem).Name | ForEach-Object { "${_}:\Tools" }
 $Paths += $ToolPaths
 
-$exe = "brightgreen"
-$dir = "mint"
 foreach ($tool in $Tools.Keys) {
 	foreach ($path in $Paths) {
 		if (($null -eq $path -or $path -eq "") -or ($null -eq $tool -or $tool -eq "")) {
