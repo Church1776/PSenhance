@@ -1,66 +1,59 @@
+<### Translate 'rmdir' alias into a function.
+now an alias can point to 'rmdir' and be implicitly understood to be used for directories.
+example: rd -> rmdir
+#>
+Get-Alias | ForEach-Object {Remove-Alias -Name $_.Name -Force -ErrorAction SilentlyContinue}
 
-$UneededAliases = @(
-	"cat"
-	"cd"
-	"cp"
-	"echo"
-	"kill"
-	"ls"
-	"mv"
-	"ps"
-	"pwd"
-	"rm"
-	"type"
+function rmdir {
+	<#
+	.FORWARDHELPTARGETNAME Remove-Item
+	.FORWARDHELPCATEGORY Cmdlet
+	#>
+	
+	[CmdletBinding(DefaultParameterSetName='pathSet',
+		SupportsShouldProcess=$true,
+		SupportsTransactions=$true,
+		ConfirmImpact='Medium')]
+		[OutputType([System.IO.DirectoryInfo])]
+	param(
+		[Parameter(ParameterSetName='pathSet', Mandatory=$true, Position=0, ValueFromPipelineByPropertyName=$true)]
+		[ValidateScript({foreach ($item in $_) {
+				if (-not (Test-Path -LiteralPath $item -PathType Container)) {
+					throw "'$item' must be an existing directory."
+				}
+			}
+			$true
+		})]
+		[System.String[]]
+		${Path},
+	
+		[Switch]
+		${Force},
 
-	"chdir"
-	"cls"
-	"del"
-	"diff"
-	"dir"
-
-	"copy"
-	"cvpa"
-	"erase"
-	"h"
-	"popd"
-	"pushd"
-	"r"
-	"rvpa"
-)
-
-$RestructuredAliases = @{
-	nd = "mkdir"
-	rd = "rmdir"
-	wh = "Write-Host"
-	ral = "Remove-Alias"
-	popl = "Pop-Location"
-	pushl = "Push-Location"
-	get = "Get-Process"
-	out = "Out-Default"
-	read = "Read-Host"
-	convert = "Convert-Path"
-	join = "Join-Path"
-	resolve = "Resolve-Path"
-	split = "Split-Path"
-	stop = "Stop-Process"
-	test = "Test-Path"
-}
-
-ForEach ($a in $UneededAliases) {
-	Remove-Alias -Name $a  -Force
-}
-
-ForEach ($entry in $RestructuredAliases.GetEnumerator()) {
-	$aliasName = $entry.Key
-	$cmdName = $entry.Value
-	if ($null -eq $cmdName) {
-		continue
+		[Switch]
+		${Recurse},
+	
+		[Parameter(ValueFromPipelineByPropertyName=$true)]
+		[System.Management.Automation.PSCredential]
+		${Credential}
+	)
+	
+	begin {
+		$wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand('Remove-Item', [System.Management.Automation.CommandTypes]::Cmdlet)
+		$scriptCmd = {& $wrappedCmd @PSBoundParameters }
+	
+		$steppablePipeline = $scriptCmd.GetSteppablePipeline()
+		$steppablePipeline.Begin($PSCmdlet)
 	}
-	if (-not (Get-Alias -Name $aliasName -ErrorAction SilentlyContinue)) {
-		Set-Alias -Name $aliasName -Value $cmdName -Force -Scope Global -ErrorAction SilentlyContinue
+	
+	process {
+		$steppablePipeline.Process($_)
+	}
+	
+	end {
+		$steppablePipeline.End()
 	}
 }
-
 function locate {
 	$longUnixFormFlag = 0
 
@@ -167,6 +160,171 @@ function lookup {
 		}
 	}
 }
+
+$RevisedAliases = [ordered]@{
+	'?'		= "Where-Object"
+	'%'		= "ForEach-Object"
+	ac		= "Add-Content"
+	clc		= "Clear-Content"
+	clear 	= "Clear-Host"
+	clhy 	= "Clear-History"
+	cli		= "Clear-Item"
+	clp		= "Clear-ItemProperty"
+	clh		= "Clear-Host"
+	clv		= "Clear-Variable"
+	cnsn 	= "Connect-PSSession"
+	compare = "Compare-Object"
+	cpi		= "Copy-Item"
+	cpp		= "Copy-ItemProperty"
+	cvpa 	= "Convert-Path"
+	dbp		= "Disable-PSBreakpoint"
+	dnsn 	= "Disconnect-PSSession"
+	ebp		= "Enable-PSBreakpoint"
+	edosi	= "Expand-OsImage"
+	edwini	= "Expand-WindowsImage"
+	xwini	= "Export-WindowsImage"
+	epal 	= "Export-Alias"
+	epcert	= "Export-Certificate"
+	epcsv 	= "Export-Csv"
+	eposi	= "Export-OsImage"
+	ethp 	= "Enter-PSHostProcess"
+	etsn 	= "Enter-PSSession"
+	etvsdev	= "Enter-VsDevShell"
+	exhp	= "Exit-PSHostProcess"
+	exsn 	= "Exit-PSSession"
+	fc		= "Format-Custom"
+	fhx		= "Format-Hex"
+	fl		= "Format-List"
+	foreach = "ForEach-Object"
+	ft		= "Format-Table"
+	fw		= "Format-Wide"
+	gal		= "Get-Alias"
+	gbp		= "Get-PSBreakpoint"
+	gc		= "Get-Content"
+	gcb		= "Get-Clipboard"
+	gci		= "Get-ChildItem"
+	gcimc	= "Get-CimClass"
+	gcimi	= "Get-CimInstance"
+	gcima	= "Get-CimAssociatedInstance"
+	gcimsn	= "Get-CimSession"
+	gcm		= "Get-Command"
+	gcs		= "Get-PSCallStack"
+	gdr		= "Get-PSDrive"
+	gerr 	= "Get-Error"
+	ghy		= "Get-History"
+	gi		= "Get-Item"
+	gin		= "Get-ComputerInfo"
+	gjb		= "Get-Job"
+	gl		= "Get-Location"
+	gm		= "Get-Member"
+	gmo		= "Get-Module"
+	gp		= "Get-ItemProperty"
+	gps		= "Get-Process"
+	gpv		= "Get-ItemPropertyValue"
+	group 	= "Group-Object"
+	gsn		= "Get-PSSession"
+	gsv		= "Get-Service"
+	gtz		= "Get-TimeZone"
+	gu		= "Get-Unique"
+	gv		= "Get-Variable"
+	gwmi	= "Get-WmiObject"
+	hy		= "Get-History"
+	history = "Get-History"
+	icim	= "Invoke-CimMethod"
+	icm		= "Invoke-Command"
+	iex		= "Invoke-Expression"
+	ihy		= "Invoke-History"
+	ii		= "Invoke-Item"
+	ipal 	= "Import-Alias"
+	ipcsv 	= "Import-Csv"
+	ipmo 	= "Import-Module"
+	irm		= "Invoke-RestMethod"
+	iwr		= "Invoke-WebRequest"
+	join	= "Join-Path"
+	measure	= "Measure-Object"
+	mi		= "Move-Item"
+	mp		= "Move-ItemProperty"
+	nal		= "New-Alias"
+	ncimi	= "New-CimInstance"
+	ncimsn	= "New-CimSession"
+	nd		= "mkdir"
+	ndr		= "New-PSDrive"
+	ni		= "New-Item"
+	nmo		= "New-Module"
+	nsn		= "New-PSSession"
+	nv		= "New-Variable"
+	ogv		= "Out-GridView"
+	oh		= "Out-Host"
+	out		= "Out-Default"
+	popl 	= "Pop-Location"
+	psedit 	= "Open-EditorFile"
+	pushl 	= "Push-Location"
+	rbp		= "Remove-PSBreakpoint"
+	rcimi	= "Remove-CimInstance"
+	rcimsn	= "Remove-CimSession"
+	rcjb 	= "Receive-Job"
+	rcsn 	= "Receive-PSSession"
+	rd		= "Remove-Item"
+	rdr		= "Remove-PSDrive"
+	rgcim	= "Register-CimIndicationEvent"
+	rgwmi	= "Register-WmiEvent"
+	ri		= "Remove-Item"
+	rjb		= "Remove-Job"
+	rmo		= "Remove-Module"
+	rni		= "Rename-Item"
+	rnp		= "Rename-ItemProperty"
+	rp		= "Remove-ItemProperty"
+	rsn		= "Remove-PSSession"
+	rv		= "Remove-Variable"
+	rvpa 	= "Resolve-Path"
+	rwmi	= "Remove-WmiObject"
+	sajb 	= "Start-Job"
+	sal		= "Set-Alias"
+	saps 	= "Start-Process"
+	sasv 	= "Start-Service"
+	sasl	= "Start-Sleep"
+	sbp		= "Set-PSBreakpoint"
+	scb		= "Set-Clipboard"
+	scimi	= "Set-CimInstance"
+	select 	= "Select-Object"
+	shcm 	= "Show-Command"
+	si		= "Set-Item"
+	sl		= "Set-Location"
+	sleep 	= "Start-Sleep"
+	slo		= "Select-Object"
+	sls		= "Select-String"
+	slx		= "Select-Xml"
+	sort 	= "Sort-Object"
+	sp		= "Set-ItemProperty"
+	spjb 	= "Stop-Job"
+	split	= "Split-Path"
+	splpa	= "Split-Path"
+	spliso	= "Split-WindowsImage"
+	spps 	= "Stop-Process"
+	spsv 	= "Stop-Service"
+	start 	= "Start-Process"
+	stop	= "Stop-Process"
+	stz		= "Set-TimeZone"
+	sv		= "Set-Variable"
+	swmi	= "Set-WmiInstance"
+	tee		= "Tee-Object"
+	wait	= "Wait-Job"
+	where 	= "Where-Object"
+	wjb		= "Wait-Job"
+	write 	= "Write-Output"
+}
+
+ForEach ($entry in $RevisedAliases.GetEnumerator()) {
+	$aliasName = $entry.Key
+	$cmdName = $entry.Value
+	if ($null -eq $cmdName) {
+		continue
+	}
+	if (-not (Get-Alias -Name $aliasName -ErrorAction SilentlyContinue)) {
+		Set-Alias -Name $aliasName -Value $cmdName -Force -Scope Global -ErrorAction SilentlyContinue
+	}
+}
+
 $llvmCmds = @($(Get-Command llvm-*).Name)
 $clangCmds = @($(Get-Command clang-*).Name)
 $mlirCmds = @($(Get-Command mlir-*).Name)
